@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong Game</title>
+<style>
+    canvas {
+        border: 1px solid black;
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+<canvas id="pongCanvas" width="800" height="400"></canvas>
+<script>
+    // Get canvas context
+    const canvas = document.getElementById('pongCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set initial positions
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
+    let ballSpeedX = 5;
+    let ballSpeedY = 5;
+    const paddleHeight = 100;
+    const paddleWidth = 10;
+    let paddle1Y = canvas.height / 2 - paddleHeight / 2;
+    let paddle2Y = canvas.height / 2 - paddleHeight / 2;
+    const paddleSpeed = 10;
+    
+    // Main game loop
+    function update() {
+        move();
+        draw();
+        requestAnimationFrame(update);
+    }
+
+    // Movement logic
+    function move() {
+        // Move paddles
+        if (keys.up) {
+            paddle2Y -= paddleSpeed;
+        } else if (keys.down) {
+            paddle2Y += paddleSpeed;
+        }
+        // Move ball
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+        // Ball collision with walls
+        if (ballY > canvas.height || ballY < 0) {
+            ballSpeedY *= -1;
+        }
+        // Ball collision with paddles
+        if (ballX < paddleWidth && ballY > paddle1Y && ballY < paddle1Y + paddleHeight ||
+            ballX > canvas.width - paddleWidth && ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+            ballSpeedX *= -1;
+        }
+    }
+
+    // Drawing logic
+    function draw() {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw paddles
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, paddle1Y, paddleWidth, paddleHeight);
+        ctx.fillRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight);
+        // Draw ball
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    // Keyboard input
+    const keys = {};
+    window.addEventListener('keydown', (e) => {
+        keys[e.key] = true;
+    });
+    window.addEventListener('keyup', (e) => {
+        keys[e.key] = false;
+    });
+
+    // Start the game
+    update();
+</script>
+</body>
+</html>
